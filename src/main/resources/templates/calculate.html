@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
+    <title>巧客</title>
+    <!-- 引入bootstrap样式 -->
+    <link th:href="@{/bootstrap/css/bootstrap.css}" rel="stylesheet" type="text/css">
+    <!--图标库-->
+    <link th:href="@{/lyear/css/materialdesignicons.min.css}" rel="stylesheet" type="text/css"/>
+    <!--弹出框样式-->
+    <link th:href="@{/lyear/jconfirm/jquery-confirm.min.css}" rel="stylesheet" type="text/css"/>
+    <!--自定义样式-->
+    <link th:href="@{/lyear/css/style.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/css/bootstrap-treeview.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/css/chosen.css}" rel="stylesheet" type="text/css">
+
+    <!-- 引入jQuery和bootstrap的js -->
+    <script th:src="@{/js/jquery.js}"></script>
+    <script th:src="@{/bootstrap/js/bootstrap.js}"></script>
+    <!--滚动条插件-->
+    <script th:src="@{/lyear/js/perfect-scrollbar.min.js}"></script>
+    <!--弹出框js-->
+    <script th:src="@{/lyear/jconfirm/jquery-confirm.min.js}"></script>
+    <!--自定义js脚本-->
+    <script th:src="@{/lyear/js/main.min.js}"></script>
+    <script th:src="@{/js/bootstrap-treeview.js}"></script>
+    <script th:src="@{/js/chosen.jquery.js}"></script>
+</head>
+<body>
+<div class="lyear-layout-web">
+    <div class="lyear-layout-container">
+        <!--左侧导航-->
+        <div th:replace="leftbar::#leftbaraside"></div>
+        <div th:replace="topbar::#topbarheader"></div>
+        <main class="lyear-layout-content">
+            <div class="container-fluid ">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="card">
+                            <div class="row">
+                                <div class="col-md-5" style="float: left">
+                                    <div class="form-group">
+                                        <div>
+                                            <select id="buyer_input" name="buyer_input" class="buyer_input_select" data-placeholder="请输入购买人姓名" >
+                                            </select>
+                                            <span class="help-block"></span>
+                                        </div>
+                                        <div>
+                                            <label for="str">计算公式</label>
+                                            <!--                                        <input type="text" class="form-control" id="str">-->
+                                            <textarea id="str" rows="3" class="form-control"></textarea>
+                                        </div>
+
+                                    </div>
+<!--                                    <div class="form-group">-->
+<!--                                       -->
+<!--                                    </div>-->
+                                    <button id="getCalStr" class="btn btn-primary">预结算</button>
+                                    <button id="calculate" class="btn btn-primary">结算</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="container-fluid">
+                <div id="treeview"></div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        $("#buyer_input").empty();
+        $.ajax({
+            url: "/buyer/buyerList1",
+            type: "GET",
+            data: {},
+            success: function (result) {
+                if (result.code === 100) {
+                    var d;
+                    d = result.extend.buyerList;
+                    var optHtml =  '<option value="-1"></option>';
+                    for (var i = 0; i < d.length; i++) {
+                        optHtml+=  '<option value=' + d[i].id + '>' + d[i].name + '</option>'
+                    }
+                    $('#buyer_input').html(optHtml);
+                    $('.buyer_input_select').trigger("chosen:updated");
+                }
+            }
+        });
+        $('.buyer_input_select').chosen();
+    });
+
+    var earningsPojo;
+    var nodeData = [];
+    $("#getCalStr").click(function () {
+        var buyerId = $("#buyer_input").val();
+        $.ajax({
+            // url: "/earnings/getCalStr/" + buyerId,
+            url: "/earnings/getCal/" + buyerId,
+            type: "POST",
+            data: {},
+            success: function (result) {
+                if (result.code === 100) {
+                    earningsPojo = result.extend.earnings2Pojo;
+                    $("#str").val(earningsPojo.str);
+                } else {
+                    $.alert('计算失败！');
+                }
+            }
+        });
+        $.ajax({
+            url: "/earnings/getSubUser/" + buyerId,
+            type: "POST",
+            data: {},
+            success: function (result) {
+                if (result.code === 100){
+                    nodeData = result.extend.list;
+                    $('#treeview').treeview({
+                        data: nodeData,
+                    });
+                } else {
+                    $.alert('查询失败！');
+                }
+            }
+        });
+
+    });
+
+    $("#calculate").click(function () {
+        var data = JSON.stringify(earningsPojo);
+        $.ajax({
+            url: "/earnings/calculate",
+            type: "POST",
+            data: data,
+            dataType: "JSON",
+            contentType: 'application/json;charset=utf-8',
+            success: function (result) {
+                if (result.code === 100) {
+                    $.alert('结算成功！');
+                } else {
+                    $.alert('结算失败！');
+                }
+            }
+        });
+    });
+
+</script>
+</body>
+</html>

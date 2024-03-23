@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
+    <title>巧客</title>
+    <!-- 引入bootstrap样式 -->
+    <link th:href="@{/bootstrap/css/bootstrap.css}" rel="stylesheet" type="text/css">
+    <!--图标库-->
+    <link th:href="@{/lyear/css/materialdesignicons.min.css}" rel="stylesheet" type="text/css"/>
+    <!--弹出框样式-->
+    <link th:href="@{/lyear/jconfirm/jquery-confirm.min.css}" rel="stylesheet" type="text/css"/>
+    <!--自定义样式-->
+    <link th:href="@{/lyear/css/style.min.css}" rel="stylesheet" type="text/css"/>
+    <!-- 引入bootstrap-datetimepicker样式 -->
+    <link th:href="@{/bootstrap/css/bootstrap-datetimepicker.min.css}" rel="stylesheet" type="text/css">
+    <link th:href="@{/css/chosen.css}" rel="stylesheet" type="text/css">
+
+    <!-- 引入jQuery和bootstrap的js -->
+    <script th:src="@{/js/jquery.js}"></script>
+    <script th:src="@{/bootstrap/js/bootstrap.js}"></script>
+    <!--滚动条插件-->
+    <script th:src="@{/lyear/js/perfect-scrollbar.min.js}"></script>
+    <!--弹出框js-->
+    <script th:src="@{/lyear/jconfirm/jquery-confirm.min.js}"></script>
+    <!--自定义js脚本-->
+    <script th:src="@{/lyear/js/main.min.js}"></script>
+    <!--引入时间选择器js-->
+    <script th:src="@{/bootstrap/js/moment-with-locales.js}"></script>
+    <script th:src="@{/bootstrap/js/bootstrap-datetimepicker.min.js}"></script>
+    <script th:src="@{/js/chosen.jquery.js}"></script>
+</head>
+<body>
+<div class="lyear-layout-web">
+    <div class="lyear-layout-container">
+        <!--左侧导航-->
+        <div th:replace="leftbar::#leftbaraside"></div>
+        <!--头部信息-->
+        <div th:replace="topbar::#topbarheader"></div>
+        <!--页面主要内容-->
+        <main class="lyear-layout-content">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="card">
+                            <nav class="navbar navbar-default">
+                                <div class="container-fluid">
+                                    <div class="navbar-header">
+                                        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                                            <span class="sr-only">Toggle navigation</span>
+                                            <span class="icon-bar"></span>
+                                            <span class="icon-bar"></span>
+                                            <span class="icon-bar"></span>
+                                        </button>
+                                        <a class="navbar-brand" href="#">人员管理</a>
+                                    </div>
+                                    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                                        <form class="navbar-form navbar-left form-inline" th:action="@{/buyer/buyerList}" id="form1" method="post">
+                                            <div class="form-group">
+                                                <input type="text" class="form-control" id="name_input" name="name" placeholder="姓名">
+                                                <button type="submit" class="btn btn-default" name="submit" value="value">查询</button>
+                                            </div>
+                                        </form>
+                                        <div class="navbar-right">
+                                            <button id="buyer_add_btn" class="btn btn-primary">新增</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </nav>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-hover table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th class="info">序号</th>
+                                                <th class="info">编号</th>
+                                                <th class="info">姓名</th>
+                                                <th class="info">会员等级</th>
+                                                <th class="info">总购买数量</th>
+                                                <th class="info">介绍人</th>
+                                                <th class="info">联系方式</th>
+                                                <th class="info">注册时间</th>
+                                                <th class="info">操作</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr th:each="buyer:${buyerList}">
+                                                <td th:text="${(buyerPageInfo.pageNum - 1) * buyerPageInfo.pageSize + buyerStat.index + 1}"></td>
+                                                <td th:text="${buyer.id}"></td>
+                                                <td th:text="${buyer.name}"></td>
+                                                <td th:text="${buyer.vipLevelDesc}"></td>
+                                                <td th:text="${buyer.buyCount}"></td>
+                                                <td th:text="${buyer.introducerName}"></td>
+                                                <td th:text="${buyer.phone}"></td>
+                                                <td th:text="${#dates.format(buyer.registrationTime, 'yyyy-MM-dd HH:mm')}"></td>
+                                                <td>
+                                                    <button class="btn btn-blue btn-sm update_btn" th:attr="update-id=${buyer.id}">
+                                                        <span class="glyphicon glyphicon-log-out" aria-hidden="true"></span> 修改
+                                                    </button>
+                                                    <button class="btn btn-blue btn-sm del_btn" th:attr="delete-id=${buyer.id}">
+                                                        <span class="glyphicon glyphicon-log-out" aria-hidden="true"></span> 删除
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <!-- 显示分页信息 -->
+                            <div class="row">
+                                <div class="col-md-5 col-md-offset-1">
+                                    <div class="btn-group">
+                                        <button class="btn btn-default">
+                                            <span>每页显示：</span>
+                                        </button>
+                                        <div class="btn-group">
+                                            <button id="btnGroupDrop1" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                <span th:text="${buyerPageInfo.pageSize}"></span>
+                                                <span class="caret"></span>
+                                            </button>
+<!--                                            <ul class="dropdown-menu">
+                                                <li th:text="${buyerPageInfo.pageSize}">
+                                                    <a th:text="${i}" th:href="@{/buyer/buyerList(pageNum=${buyerPageInfo.pageNum}, pageSize=${i})}"></a>
+                                                </li>
+                                            </ul>-->
+                                        </div>
+                                        <button class="btn btn-default">
+                                            <span>条</span>
+                                        </button>
+                                        <button class="btn btn-default">
+                                            <span>总记录数：</span>
+                                        </button>
+                                        <button class="btn btn-default">
+                                            <span th:text="${buyerPageInfo.total}+'条'"></span>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- 分页条信息 -->
+                                <div class="col-md-5">
+                                    <nav aria-label="Page navigation">
+                                        <ul class="pagination pagination-lg pull-right" style="margin-top: 0">
+                                            <li>
+                                                <a th:href="@{/buyer/buyerList(pageNum=1, pageSize=${buyerPageInfo.pageSize})}">首页</a>
+                                            </li>
+                                            <li th:if="${buyerPageInfo.hasPreviousPage }">
+                                                <a th:href="@{/buyer/buyerList(pageNum=${buyerPageInfo.pageNum}-1, pageSize=${buyerPageInfo.pageSize})}" aria-label="Previous">
+                                                    <span aria-hidden="true">&laquo;</span>
+                                                </a>
+                                            </li>
+                                            <li th:each="page_Num:${buyerPageInfo.navigatepageNums }" th:class="${page_Num == buyerPageInfo.pageNum?'active':''}">
+                                                <a th:if="${page_Num == buyerPageInfo.pageNum}" th:text="${page_Num}" th:href="@{#}">
+                                                </a>
+                                                <a th:text="${page_Num}" th:if="${page_Num != buyerPageInfo.pageNum}" th:href="@{/buyer/buyerList(pageNum=${page_Num}, pageSize=${buyerPageInfo.pageSize})}">
+                                                </a>
+                                            </li>
+                                            <li th:if="${buyerPageInfo.hasNextPage }">
+                                                <a th:href="@{/buyer/buyerList(pageNum=${buyerPageInfo.pageNum}+1,pageSize=${buyerPageInfo.pageSize})}" aria-label="Next">
+                                                    <span aria-hidden="true">&raquo;</span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a th:href="@{/buyer/buyerList(pageNum=${buyerPageInfo.pages},pageSize=${buyerPageInfo.pageSize})}">末页</a>
+                                            </li>
+                                        </ul>
+                                    </nav>
+                                </div>
+                            </div>
+
+                            <!-- 新增购买人的模态框 -->
+                            <div class="modal fade" id="buyerAddModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                            <h4 class="modal-title">新增人员</h4>
+                                        </div>
+                                        <div class="modal-body">
+                                            <!--要提交的表单 -->
+                                            <form class="form-horizontal">
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">姓名：</label>
+                                                    <div class="col-sm-6">
+                                                        <input type="text" class="form-control" id="name_add_input" name="name" placeholder="请输入姓名">
+                                                        <span class="help-block"></span>
+                                                    </div>
+                                                    <div class="col-sm-1">
+                                                        <em style="color: red">*</em>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">介绍人：</label>
+                                                    <div class="col-sm-6">
+                                                        <select name="introducerId" data-placeholder="选择介绍人"  id="introducerId" class="introducerId_select">
+                                                        </select>
+                                                        <span class="help-block"></span>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">购买份额：</label>
+                                                    <div class="col-sm-6">
+                                                        <input type="text" class="form-control" id="buy_add_count" name="buyCount" placeholder="请输入购买份额">
+                                                        <span class="help-block"></span>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">联系方式：</label>
+                                                    <div class="col-sm-6">
+                                                        <input type="text" class="form-control" id="phone_add_input" name="phone" placeholder="请输入联系方式">
+                                                        <span class="help-block"></span>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                                            <button type="button" class="btn btn-primary" id="buyer_save_btn">保存</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 修改购买人的模态框 -->
+                            <div class="modal fade" id="buyerUpdateModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                            <h4 class="modal-title">修改人员</h4>
+                                        </div>
+                                        <div class="modal-body">
+                                            <!--要提交的表单 -->
+                                            <form class="form-horizontal">
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">姓名：</label>
+                                                    <div class="col-sm-6">
+                                                        <input type="text" class="form-control" id="name_edit_input" name="name" placeholder="请输入姓名">
+                                                        <span class="help-block"></span>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">介绍人：</label>
+                                                    <div class="col-sm-6">
+                                                        <select name="introducerId" data-placeholder="选择介绍人" id="introducerEditId" class="introducerId_select">
+                                                        </select>
+                                                        <span class="help-block"></span>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">购买份额：</label>
+                                                    <div class="col-sm-6">
+                                                        <input type="text" class="form-control" id="buy_update_count" name="buyCount" placeholder="请输入购买份额">
+                                                        <span class="help-block"></span>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">联系方式：</label>
+                                                    <div class="col-sm-6">
+                                                        <input type="text" class="form-control" id="phone_update_input" name="phone" placeholder="请输入联系方式">
+                                                        <span class="help-block"></span>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                                            <button type="button" class="btn btn-primary" id="buyer_update_btn">更新</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+        <!--End 页面主要内容-->
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(function() {
+        $('#datetimepicker1').datetimepicker({
+            format: 'YYYY-MM-DD hh:mm:ss',
+            locale: moment.locale('zh-cn')
+        });
+        $('#datetimepicker2').datetimepicker({
+            format: 'YYYY-MM-DD hh:mm:ss',
+            locale: moment.locale('zh-cn')
+        });
+    });
+
+    //点击编辑按钮时触发事件
+    $(document).on("click", ".update_btn", function() {
+        $("#introducerEditId").empty();
+
+        $.ajax({
+            url: "/buyer/buyerList1",
+            type: "GET",
+            data: {},
+            success: function (result) {
+                if (result.code === 100) {
+                    var d = [];
+                    d = result.extend.buyerList;
+                    var optHtml =  '<option value="-1"></option>';
+                    for (var i = 0; i < d.length; i++) {
+                        optHtml+=  '<option value=' + d[i].id + '>' + d[i].name + '</option>'
+                    }
+                    $('#introducerEditId').html(optHtml);
+                    $('.introducerId_select').trigger("chosen:updated");
+                }
+            }
+        });
+
+        $('.introducerId_select').chosen();
+
+        //根据用户id发送ajax请求，查出用户信息并显示
+        getBuyer($(this).attr("update-id"));
+
+        //把用户的id传递给模态框的更新按钮
+        $("#buyer_update_btn").attr("update-id", $(this).attr("update-id"));
+        $("#buyerUpdateModal").modal({
+            backdrop: "static"
+        });
+    });
+
+    //点击新增按钮弹出模态框
+    $("#buyer_add_btn").click(function (){
+        //清除表单数据（表单完整重置（表单的数据，表单的样式））
+        reset_form("#buyerAddModal form");
+
+        $("#introducerId").empty();
+        $.ajax({
+            url: "/buyer/buyerList1",
+            type: "GET",
+            data: {},
+            success: function (result) {
+                if (result.code === 100) {
+                    var d = [];
+                    d = result.extend.buyerList;
+                    var optHtml =  '<option value="-1"></option>';
+                    for (var i = 0; i < d.length; i++) {
+                        optHtml+=  '<option value=' + d[i].id + '>' + d[i].name + '</option>'
+                    }
+                    $('#introducerId').html(optHtml);
+                    $('.introducerId_select').trigger("chosen:updated");
+                }
+            }
+        });
+        $('.introducerId_select').chosen();
+
+        //弹出模态框
+        $("#buyerAddModal").modal({
+            //点击增加框背景不删除增加框
+            backdrop: "static"
+        });
+    });
+
+    // 点击保存按钮
+    $("#buyer_save_btn").click(function (){
+        //清空表单样式
+        clean_form("#buyerAddModal form");
+
+        $.ajax({
+            url: "/buyer/addBuyer",
+            type: "POST",
+            data: $("#buyerAddModal form").serialize(),
+            success: function (result) {
+                if (result.code === 100) {
+                    $("#buyerAddModal").modal('hide');
+                    $.alert('新增成功！');
+                    setTimeout(function () {
+                        var pageNum = [[${buyerPageInfo.pages}]];
+                        var pageSize = [[${buyerPageInfo.pageSize}]];
+                        location.href = "/buyer/buyerList?pageNum=" + pageNum + "&pageSize=" + pageSize;
+                    }, 1000);
+                } else {
+                    $.alert('新增失败！');
+                }
+            }
+        });
+    });
+
+    //点击更新，更新购买人信息
+    $("#buyer_update_btn").click(function () {
+        //清空表单样式
+        clean_form("#userUpdateModal form");
+
+        //2、发送ajax请求保存更新的员工数据
+        $.ajax({
+            url: "/buyer/updateBuyer/" + $(this).attr("update-id"),
+            type: "PUT",
+            data: $("#buyerUpdateModal form").serialize(),
+            success: function (result) {
+                if (result.code === 100) {
+                    $("#userUpdateModal").modal('hide');
+                    $.alert('信息修改成功！');
+                    setTimeout(function () {
+                        var pageNum = [[${buyerPageInfo.pageNum}]];
+                        var pageSize = [[${buyerPageInfo.pageSize}]];
+                        location.href = "/buyer/buyerList?pageNum=" + pageNum + "&pageSize=" + pageSize;
+                    }, 1000);
+                } else {
+                    $.alert('信息修改失败！');
+                }
+            }
+        });
+    });
+
+    //单个删除
+    $(document).on("click", ".del_btn", function () {
+        //1、弹出是否确认删除对话框
+        var id = $(this).attr("delete-id");
+        var username = $(this).attr("delete-name");
+        $.alert({
+            title: '提示：',
+            content: "确定删除购买人 <strong>" + name + "</strong> 吗？",
+            buttons: {
+                confirm: {
+                    text: '确认',
+                    btnClass: 'btn-primary',
+                    action: function () {
+                        $.ajax({
+                            url: "/buyer/delBuyer/" + id,
+                            type: "DELETE",
+                            success: function (result) {
+                                if (result.code === 100) {
+                                    $.alert('删除成功！');
+                                    setTimeout(function () {
+                                        var pageNum = [[${buyerPageInfo.pageNum}]];
+                                        var pageSize = [[${buyerPageInfo.pageSize}]];
+                                        location.href = "/buyer/buyerList?pageNum=" + pageNum + "&pageSize=" + pageSize;
+                                    }, 1000);
+                                } else {
+                                    $.alert('删除失败!');
+                                }
+                            }
+                        });
+                    }
+                },
+                cancel: {
+                    text: '取消',
+                    action: function () {
+                        $.alert('已取消!');
+                    }
+                }
+            }
+        });
+    });
+
+    //清空表单样式
+    function clean_form(ele) {
+        //清空表单样式
+        $(ele).find("*").removeClass("has-error has-success");
+        $(ele).find(".help-block").text("");
+    }
+
+    //清空表单样式及内容
+    function reset_form(ele) {
+        // $(ele)[0].reset();
+        //清空表单样式
+        clean_form(ele);
+    }
+
+    //显示校验结果的提示信息
+    function show_validate_msg(ele, status, msg) {
+        //清除当前元素的校验状态
+        $(ele).parent().removeClass("has-success has-error");
+        $(ele).next("span").text("");
+        if ("success" === status) {
+            $(ele).parent().addClass("has-success");
+            $(ele).next("span").text(msg);
+        } else if ("error" === status) {
+            $(ele).parent().addClass("has-error");
+            $(ele).next("span").text(msg);
+        }
+    }
+
+    // 根据购买人ID查询购买人信息
+    function getBuyer(id) {
+        $.ajax({
+            url: "/buyer/getBuyerById/" + id,
+            type: "GET",
+            success: function (result) {
+                var buyer = result.extend.buyer;
+                //显示数据之前先清除一下校验样式，如果有的话
+                reset_form("#buyerUpdateModal form");
+                $("#name_edit_input").val(buyer.name);
+                // $("#introducer_edit_input").val(buyer.introducerName);
+                $("#introducerEditId option[value=" + buyer.introducerId + "]").attr("selected", true);
+                $('.introducerId_select').trigger("chosen:updated");
+                // $("#introducerId_select").find(option[text="1902"]).attr("selected",true);
+                $("#vip_update_level").val(buyer.vipLevel);
+                $("#buy_update_count").val(buyer.buyCount);
+                $("#phone_update_input").val(buyer.phone);
+            }
+        });
+    }
+
+</script>
+</body>
+</html>

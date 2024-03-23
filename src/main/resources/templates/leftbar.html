@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <meta charset="UTF-8">
+    <title>leftbar</title>
+</head>
+<body>
+<!--左侧导航-->
+<aside class="lyear-layout-sidebar" id="leftbaraside">
+<!--    <div id="logo" class="sidebar-header">
+        <a class="navbar-brand" style="font-size: 20px" th:href="@{/admin/index.html}">后台管理系统</a>
+    </div>-->
+    <div class="lyear-layout-sidebar-scroll">
+        <nav class="sidebar-main">
+            <ul class="nav nav-drawer">
+                <li class="nav-item" th:class="${activeUrl=='indexActive'?'nav-item active':'nav-item'}">
+                    <a th:href="@{/buyer/buyerList}"><i class="mdi mdi-home"></i>人员管理</a>
+                </li>
+                <li class="nav-item" th:class="${activeUrl=='indexActive'?'nav-item active':'nav-item'}">
+                    <a th:href="@{/purchaseRecord/recordList}"><i class="mdi mdi-home"></i>购买记录</a>
+                </li>
+                <li class="nav-item" th:class="${activeUrl=='indexActive'?'nav-item active':'nav-item'}">
+                    <a th:href="@{/calculate}"><i class="mdi mdi-home"></i>结算</a>
+                </li>
+                <li class="nav-item" th:class="${activeUrl=='indexActive'?'nav-item active':'nav-item'}">
+                    <a th:href="@{/earnings/earningsList}"><i class="mdi mdi-home"></i>结算查询</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</aside>
+<!--End 左侧导航-->
+
+</body>
+</html>
