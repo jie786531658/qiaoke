@@ -109,7 +109,7 @@
                                             <td th:text="${record.introducerName}"></td>
                                             <td th:text="${record.amount}"></td>
                                             <th th:text="${record.calFlagStr}"></th>
-                                            <td th:text="${#dates.format(record.buyTime, 'yyyy-MM-dd HH:mm')}"></td>
+                                            <td th:text="${#dates.format(record.buyTime, 'yyyy-MM-dd HH:mm:ss')}"></td>
                                             <td>
                                                 <button class="btn btn-blue btn-sm update_btn"
                                                         th:attr="update-id=${record.id}">

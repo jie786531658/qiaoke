@@ -92,7 +92,7 @@
                                                 <td th:text="${buyer.buyCount}"></td>
                                                 <td th:text="${buyer.introducerName}"></td>
                                                 <td th:text="${buyer.phone}"></td>
-                                                <td th:text="${#dates.format(buyer.registrationTime, 'yyyy-MM-dd HH:mm')}"></td>
+                                                <td th:text="${#dates.format(buyer.registrationTime, 'yyyy-MM-dd HH:mm:ss')}"></td>
                                                 <td>
                                                     <button class="btn btn-blue btn-sm update_btn" th:attr="update-id=${buyer.id}">
                                                         <span class="glyphicon glyphicon-log-out" aria-hidden="true"></span> 修改
