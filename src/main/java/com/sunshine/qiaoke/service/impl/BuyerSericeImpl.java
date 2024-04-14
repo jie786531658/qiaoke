@@ -6,17 +6,14 @@ import com.sunshine.qiaoke.Dao.Buyer;
 import com.sunshine.qiaoke.mapper.BuyerMapper;
 import com.sunshine.qiaoke.service.BuyerService;
 import com.sunshine.qiaoke.vo.BuyerVo;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Date;
+import javax.annotation.Resource;
 import java.util.List;
 
 @Service
 public class BuyerSericeImpl extends ServiceImpl<BuyerMapper, Buyer> implements BuyerService {
-
-    @Autowired
+    @Resource
     private BuyerMapper buyerMapper;
 
     @Override
@@ -29,10 +26,9 @@ public class BuyerSericeImpl extends ServiceImpl<BuyerMapper, Buyer> implements 
         buyer.setRegistrationTime(DateUtil.date());
         return buyerMapper.insert(buyer);
     }
-
     @Override
     public Integer updateBuyer(Buyer buyer) {
-         return buyerMapper.updateById(buyer);
+        return buyerMapper.updateById(buyer);
     }
 
     @Override
@@ -51,34 +47,8 @@ public class BuyerSericeImpl extends ServiceImpl<BuyerMapper, Buyer> implements 
     }
 
     @Override
-    public BuyerVo getSubBuyer(Long id){
-        BuyerVo buyerVo = new BuyerVo();
-        //查找自身信息
-        Buyer buyer = buyerMapper.selectById(id);
-        buyerVo.setId(buyer.getId());
-        buyerVo.setName(buyer.getName());
-        buyerVo.setText(buyer.getName());
-        buyerVo.setIntroducerId(buyer.getIntroducerId());
-
-        //查找所有人；
-        List<Buyer> buyers = buyerMapper.getAllBuyer();
-        // 下级
-        List<BuyerVo> subBuyerVos = new ArrayList<>();
-        //找到一层下级
-        for (Buyer buyer1 : buyers){
-            if (buyer1.getIntroducerId().equals(buyer.getId())){
-                BuyerVo subBuyerVo = new BuyerVo();
-                subBuyerVo.setId(buyer1.getId());
-                subBuyerVo.setName(buyer1.getName());
-                subBuyerVo.setText(buyer1.getName());
-                subBuyerVo.setIntroducerId(buyer1.getIntroducerId());
-                subBuyerVos.add(subBuyerVo);
-            }
-        }
-        buyerVo.setNodes(subBuyerVos);
-        //找到子级的子级
-        findSubBuyer(subBuyerVos, buyers);
-        return buyerVo;
+    public List<BuyerVo> getTree(Long id) {
+        return buyerMapper.getTree(id);
     }
 
     @Override
@@ -87,7 +57,44 @@ public class BuyerSericeImpl extends ServiceImpl<BuyerMapper, Buyer> implements 
         return result > 1;
     }
 
-    private void findSubBuyer(List<BuyerVo> subBuyerVos, List<Buyer> buyers){
+/*    public BuyerVo getSubBuyer(Long id) {
+        buyerMapper.getChildren(id);
+    }*/
+
+
+/*    @Override
+    public BuyerVo getSubBuyer(Long id) {
+        BuyerVo buyerVo = new BuyerVo();
+        //查找自身信息
+        Buyer buyer = buyerMapper.selectById(id);
+        buyerVo.setId(buyer.getId());
+        buyerVo.setName(buyer.getName());
+        buyerVo.setText(buyer.getName());
+        buyerVo.setIntroducerId(buyer.getIntroducerId());
+
+        //查找所有人
+        List<Buyer> buyers = buyerMapper.getAllBuyer();
+        //下级
+        List<BuyerVo> subBuyerVos = new ArrayList<>();
+        //找到一层下级
+        for (Buyer buyer1 : buyers) {
+            if (buyer1.getIntroducerId().equals(buyer.getId())) {
+                BuyerVo subBuyerVo = new BuyerVo();
+                subBuyerVo.setId(buyer1.getId());
+                subBuyerVo.setName(buyer1.getName());
+                subBuyerVo.setText(buyer1.getName());
+                subBuyerVo.setIntroducerId(buyer1.getIntroducerId());
+                subBuyerVos.add(subBuyerVo);
+            }
+        }
+
+        buyerVo.setNodes(subBuyerVos);
+        //找到子级的子级
+        findSubBuyer(subBuyerVos, buyers);
+        return buyerVo;
+    }*/
+
+/*    private void findSubBuyer(List<BuyerVo> subBuyerVos, List<Buyer> buyers) {
         for (BuyerVo subBuyerVo : subBuyerVos) {
             List<BuyerVo> subBuyerVoss = new ArrayList<>();
             for (Buyer buyer : buyers) {
@@ -99,12 +106,12 @@ public class BuyerSericeImpl extends ServiceImpl<BuyerMapper, Buyer> implements 
                     subBuyerVoo.setIntroducerId(buyer.getIntroducerId());
                     subBuyerVoss.add(subBuyerVoo);
                 }
-                if(subBuyerVoss.size()>0){
+                if (!subBuyerVoss.isEmpty()) {
                     subBuyerVo.setNodes(subBuyerVoss);
                 }
                 findSubBuyer(subBuyerVoss, buyers);
             }
         }
-    }
+    }*/
 
 }

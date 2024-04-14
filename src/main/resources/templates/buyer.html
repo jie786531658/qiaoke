@@ -78,6 +78,7 @@
                                                 <th class="info">会员等级</th>
                                                 <th class="info">总购买数量</th>
                                                 <th class="info">介绍人</th>
+                                                <th class="info">计算顺序</th>
                                                 <th class="info">联系方式</th>
                                                 <th class="info">注册时间</th>
                                                 <th class="info">操作</th>
@@ -91,6 +92,7 @@
                                                 <td th:text="${buyer.vipLevelDesc}"></td>
                                                 <td th:text="${buyer.buyCount}"></td>
                                                 <td th:text="${buyer.introducerName}"></td>
+                                                <td th:text="${buyer.calOrder}"></td>
                                                 <td th:text="${buyer.phone}"></td>
                                                 <td th:text="${#dates.format(buyer.registrationTime, 'yyyy-MM-dd HH:mm:ss')}"></td>
                                                 <td>
@@ -193,7 +195,7 @@
                                                 <div class="form-group">
                                                     <label class="col-sm-2 control-label">介绍人：</label>
                                                     <div class="col-sm-6">
-                                                        <select name="introducerId" data-placeholder="选择介绍人"  id="introducerId" class="introducerId_select">
+                                                        <select id="introducerId" name="introducerId" class="introducerId_select" data-placeholder="选择介绍人">
                                                         </select>
                                                         <span class="help-block"></span>
                                                     </div>
@@ -210,6 +212,16 @@
                                                     <div class="col-sm-6">
                                                         <input type="text" class="form-control" id="phone_add_input" name="phone" placeholder="请输入联系方式">
                                                         <span class="help-block"></span>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">计算顺序：</label>
+                                                    <div class="col-sm-6">
+                                                        <input type="text" class="form-control" id="cal_order" name="calOrder" placeholder="请输入同一分组内的计算顺序">
+                                                        <span class="help-block"></span>
+                                                    </div>
+                                                    <div class="col-sm-1">
+                                                        <em style="color: red">*</em>
                                                     </div>
                                                 </div>
                                             </form>
@@ -242,14 +254,14 @@
                                                         <span class="help-block"></span>
                                                     </div>
                                                 </div>
-                                                <div class="form-group">
+<!--                                                <div class="form-group">
                                                     <label class="col-sm-2 control-label">介绍人：</label>
                                                     <div class="col-sm-6">
-                                                        <select name="introducerId" data-placeholder="选择介绍人" id="introducerEditId" class="introducerId_select">
+                                                        <select id="introducerEditId" name="introducerId" data-placeholder="选择介绍人" class="introducerId_select">
                                                         </select>
                                                         <span class="help-block"></span>
                                                     </div>
-                                                </div>
+                                                </div>-->
                                                 <div class="form-group">
                                                     <label class="col-sm-2 control-label">购买份额：</label>
                                                     <div class="col-sm-6">
@@ -262,6 +274,16 @@
                                                     <div class="col-sm-6">
                                                         <input type="text" class="form-control" id="phone_update_input" name="phone" placeholder="请输入联系方式">
                                                         <span class="help-block"></span>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-sm-2 control-label">计算顺序：</label>
+                                                    <div class="col-sm-6">
+                                                        <input type="text" class="form-control" id="cal_order_update" name="calOrder" placeholder="请输入同一分组内的计算顺序">
+                                                        <span class="help-block"></span>
+                                                    </div>
+                                                    <div class="col-sm-1">
+                                                        <em style="color: red">*</em>
                                                     </div>
                                                 </div>
                                             </form>
@@ -294,18 +316,16 @@
         });
     });
 
-    //点击编辑按钮时触发事件
+    //点击修改按钮时触发事件
     $(document).on("click", ".update_btn", function() {
         $("#introducerEditId").empty();
-
         $.ajax({
-            url: "/buyer/buyerList1",
+            url: "/buyer/listAllBuyer",
             type: "GET",
             data: {},
             success: function (result) {
                 if (result.code === 100) {
-                    var d = [];
-                    d = result.extend.buyerList;
+                    var d = result.extend.buyerList;
                     var optHtml =  '<option value="-1"></option>';
                     for (var i = 0; i < d.length; i++) {
                         optHtml+=  '<option value=' + d[i].id + '>' + d[i].name + '</option>'
@@ -315,7 +335,6 @@
                 }
             }
         });
-
         $('.introducerId_select').chosen();
 
         //根据用户id发送ajax请求，查出用户信息并显示
@@ -330,18 +349,14 @@
 
     //点击新增按钮弹出模态框
     $("#buyer_add_btn").click(function (){
-        //清除表单数据（表单完整重置（表单的数据，表单的样式））
-        reset_form("#buyerAddModal form");
-
         $("#introducerId").empty();
         $.ajax({
-            url: "/buyer/buyerList1",
+            url: "/buyer/listAllBuyer",
             type: "GET",
             data: {},
             success: function (result) {
                 if (result.code === 100) {
-                    var d = [];
-                    d = result.extend.buyerList;
+                    var d = result.extend.buyerList;
                     var optHtml =  '<option value="-1"></option>';
                     for (var i = 0; i < d.length; i++) {
                         optHtml+=  '<option value=' + d[i].id + '>' + d[i].name + '</option>'
@@ -362,9 +377,6 @@
 
     // 点击保存按钮
     $("#buyer_save_btn").click(function (){
-        //清空表单样式
-        clean_form("#buyerAddModal form");
-
         $.ajax({
             url: "/buyer/addBuyer",
             type: "POST",
@@ -387,9 +399,6 @@
 
     //点击更新，更新购买人信息
     $("#buyer_update_btn").click(function () {
-        //清空表单样式
-        clean_form("#userUpdateModal form");
-
         //2、发送ajax请求保存更新的员工数据
         $.ajax({
             url: "/buyer/updateBuyer/" + $(this).attr("update-id"),
@@ -415,7 +424,6 @@
     $(document).on("click", ".del_btn", function () {
         //1、弹出是否确认删除对话框
         var id = $(this).attr("delete-id");
-        var username = $(this).attr("delete-name");
         $.alert({
             title: '提示：',
             content: "确定删除购买人 <strong>" + name + "</strong> 吗？",
@@ -452,34 +460,6 @@
         });
     });
 
-    //清空表单样式
-    function clean_form(ele) {
-        //清空表单样式
-        $(ele).find("*").removeClass("has-error has-success");
-        $(ele).find(".help-block").text("");
-    }
-
-    //清空表单样式及内容
-    function reset_form(ele) {
-        // $(ele)[0].reset();
-        //清空表单样式
-        clean_form(ele);
-    }
-
-    //显示校验结果的提示信息
-    function show_validate_msg(ele, status, msg) {
-        //清除当前元素的校验状态
-        $(ele).parent().removeClass("has-success has-error");
-        $(ele).next("span").text("");
-        if ("success" === status) {
-            $(ele).parent().addClass("has-success");
-            $(ele).next("span").text(msg);
-        } else if ("error" === status) {
-            $(ele).parent().addClass("has-error");
-            $(ele).next("span").text(msg);
-        }
-    }
-
     // 根据购买人ID查询购买人信息
     function getBuyer(id) {
         $.ajax({
@@ -487,15 +467,13 @@
             type: "GET",
             success: function (result) {
                 var buyer = result.extend.buyer;
-                //显示数据之前先清除一下校验样式，如果有的话
-                reset_form("#buyerUpdateModal form");
                 $("#name_edit_input").val(buyer.name);
-                // $("#introducer_edit_input").val(buyer.introducerName);
-                $("#introducerEditId option[value=" + buyer.introducerId + "]").attr("selected", true);
-                $('.introducerId_select').trigger("chosen:updated");
-                // $("#introducerId_select").find(option[text="1902"]).attr("selected",true);
+                // $(".introducerId_select option[value=" + buyer.introducerId + "]").attr("selected", true);
+                $("#introducerEditId").val(buyer.introducerId);
+                $("#introducerEditId").trigger("chosen:updated");
                 $("#vip_update_level").val(buyer.vipLevel);
                 $("#buy_update_count").val(buyer.buyCount);
+                $("#cal_order_update").val(buyer.calOrder);
                 $("#phone_update_input").val(buyer.phone);
             }
         });

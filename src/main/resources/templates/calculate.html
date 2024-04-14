@@ -48,14 +48,10 @@
                                         </div>
                                         <div>
                                             <label for="str">计算公式</label>
-                                            <!--                                        <input type="text" class="form-control" id="str">-->
                                             <textarea id="str" rows="3" class="form-control"></textarea>
                                         </div>
 
                                     </div>
-<!--                                    <div class="form-group">-->
-<!--                                       -->
-<!--                                    </div>-->
                                     <button id="getCalStr" class="btn btn-primary">预结算</button>
                                     <button id="calculate" class="btn btn-primary">结算</button>
                                 </div>
@@ -75,7 +71,7 @@
     $(function () {
         $("#buyer_input").empty();
         $.ajax({
-            url: "/buyer/buyerList1",
+            url: "/buyer/listAllBuyer",
             type: "GET",
             data: {},
             success: function (result) {
@@ -99,13 +95,12 @@
     $("#getCalStr").click(function () {
         var buyerId = $("#buyer_input").val();
         $.ajax({
-            // url: "/earnings/getCalStr/" + buyerId,
-            url: "/earnings/getCal/" + buyerId,
+            url: "/earnings/getCalStr/" + buyerId,
             type: "POST",
             data: {},
             success: function (result) {
                 if (result.code === 100) {
-                    earningsPojo = result.extend.earnings2Pojo;
+                    earningsPojo = result.extend.earningsPojo;
                     $("#str").val(earningsPojo.str);
                 } else {
                     $.alert('计算失败！');

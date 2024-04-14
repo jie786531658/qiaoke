@@ -15,10 +15,6 @@ public class BuyerVo {
 
     private Long introducerId;
 
-    private int buyCount;
-
-    private int allCount;
-
     private List<BuyerVo> nodes;
 
 }

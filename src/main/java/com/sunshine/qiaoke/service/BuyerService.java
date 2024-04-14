@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.sunshine.qiaoke.Dao.Buyer;
 import com.sunshine.qiaoke.vo.BuyerVo;
 
-import java.util.Date;
 import java.util.List;
 
 public interface BuyerService extends IService<Buyer> {
@@ -26,7 +25,7 @@ public interface BuyerService extends IService<Buyer> {
     // 查询出所有直接下级，不包括下级的下级
     List<Buyer> getChildren(Long id);
 
-    BuyerVo getSubBuyer(Long id);
+    List<BuyerVo> getTree(Long id);
 
     boolean jiezhuan();
 

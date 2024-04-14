@@ -14,4 +14,11 @@ public interface VipLevelDicService extends IService<VipLevelDic> {
      */
     VipLevelDic getLevelAndBonusByJudgeCount(Integer count);
 
+    /**
+     * 得到对应份额的奖金
+     * @param count 份额
+     * @return 奖金
+     */
+    Integer getBonusByCount(Integer count);
+
 }

@@ -6,12 +6,11 @@ import com.sunshine.qiaoke.Dao.PurchaseRecord;
 import com.sunshine.qiaoke.common.Msg;
 import com.sunshine.qiaoke.service.PurchaseRecordService;
 import com.sunshine.qiaoke.vo.PurchaseRecordQuery;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.thymeleaf.util.StringUtils;
 
+import javax.annotation.Resource;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -21,31 +20,19 @@ import java.util.List;
 @RequestMapping("/purchaseRecord")
 public class PurchaseRecordController {
 
-    @Autowired
+    @Resource
     private PurchaseRecordService purchaseRecordService;
-
-/*    @RequestMapping("/recordList1")
-    public String recordList1(@RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum,
-                              @RequestParam(value = "pageSize", defaultValue = "20") Integer pageSize,
-                              Model model) {
-        PageHelper.startPage(pageNum, pageSize);
-        List<PurchaseRecord> recordList = purchaseRecordService.listPurchaseRecord(null, null, null, -1);
-        PageInfo<PurchaseRecord> pageInfo = new PageInfo<>(recordList);
-        model.addAttribute("recordList", recordList);
-        model.addAttribute("pageInfo", pageInfo);
-        return "purchaseRecord";
-    }*/
 
     @RequestMapping("/recordList")
     public String recordList(@RequestParam(value = "name", required = false) String name,
-                             @RequestParam(value = "calFlag", required = true, defaultValue = "-1") int calFlag,
-                             @RequestParam(value = "startTime", required = true, defaultValue = "2024-01-01 00:00") String startTime,
-                             @RequestParam(value = "endTime", required = true, defaultValue = "2099-01-01 00:00") String endTime,
+                             @RequestParam(value = "calFlag", defaultValue = "-1") int calFlag,
+                             @RequestParam(value = "startTime", defaultValue = "2024-01-01 00:00") String startTime,
+                             @RequestParam(value = "endTime", defaultValue = "2099-01-01 00:00") String endTime,
                              @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum,
                              @RequestParam(value = "pageSize", defaultValue = "20") Integer pageSize,
                              Model model) throws ParseException {
         PurchaseRecordQuery query = new PurchaseRecordQuery();
-        if (name != null || !StringUtils.isEmpty(name)) {
+        if (name != null) {
             query.setName(name);
         }
         query.setCalFlag(calFlag);

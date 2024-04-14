@@ -1,11 +1,9 @@
 package com.sunshine.qiaoke.service;
 
 import com.sunshine.qiaoke.Dao.Earnings;
-import com.sunshine.qiaoke.vo.CalEarnings2Pojo;
 import com.sunshine.qiaoke.vo.CalEarningsPojo;
 import com.sunshine.qiaoke.vo.EarningsQuery;
 
-import javax.script.ScriptException;
 import java.util.List;
 
 public interface EarningsService {
@@ -18,7 +16,7 @@ public interface EarningsService {
      * @param id 待计算收益人员的ID
      * @return 收益、计算方式字符串
      */
-    CalEarningsPojo getCalStr(Long id) throws ScriptException;
+    CalEarningsPojo getCalStr(Long id);
 
     /**
      * 1、更新人员表中自身的会员等级和购买份额
@@ -28,16 +26,5 @@ public interface EarningsService {
      * @return 更新是否成功
      */
     boolean calculate(CalEarningsPojo calEarningsPojo);
-
-    /**
-     * 1、更新人员表中自身的会员等级、购买份额、临时会员等级、临时购买份额
-     * 2、往收益表中新增相应数据
-     *
-     * @param calEarnings2Pojo 待计算收益人员的ID
-     * @return 更新是否成功
-     */
-    boolean calculate2(CalEarnings2Pojo calEarnings2Pojo);
-
-    CalEarnings2Pojo cal(Long id) throws ScriptException;
 
 }

@@ -1,8 +1,5 @@
 package com.sunshine.qiaoke.Dao;
 
-import java.util.Date;
-import java.util.List;
-
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -10,6 +7,9 @@ import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
+
+import java.util.Date;
+import java.util.List;
 
 // 购买人表
 @Data
@@ -32,7 +32,7 @@ public class Buyer {
     // 购买份额
     private Integer buyCount;
 
-    //结算时使用的临时份额，结转后回写到buyCount
+    // 结算时使用的临时份额，结转后回写到buyCount
     private Integer tempCount;
 
     /**
@@ -50,6 +50,9 @@ public class Buyer {
     //结算时使用的临时会员等级，结转后回写到vipLevel
     private Integer tempLevel;
 
+    //同一分组内结算顺序
+    private Integer calOrder;
+
     /**
      * 介绍人ID
      */
@@ -60,8 +63,6 @@ public class Buyer {
      */
     @TableField(exist = false)
     private String introducerName;
-
-
 
     /**
      * 删除标志

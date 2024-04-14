@@ -1,6 +1,6 @@
 package com.sunshine.qiaoke.controller;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.sunshine.qiaoke.Dao.Buyer;
@@ -8,31 +8,27 @@ import com.sunshine.qiaoke.Dao.VipLevelDic;
 import com.sunshine.qiaoke.common.Msg;
 import com.sunshine.qiaoke.service.BuyerService;
 import com.sunshine.qiaoke.service.VipLevelDicService;
-import com.sunshine.qiaoke.vo.BuyerListQuery;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.thymeleaf.util.StringUtils;
 
+import javax.annotation.Resource;
 import java.util.List;
 
 @Controller
 @RequestMapping("/buyer")
 public class BuyerController {
 
-    @Autowired
+    @Resource
     private BuyerService buyerService;
 
-    @Autowired
+    @Resource
     private VipLevelDicService vipLevelDicService;
 
-    @RequestMapping("/buyerList1")
+    @RequestMapping("/listAllBuyer")
     @ResponseBody
-    public Msg getBuyerList1(@RequestParam(value = "name", required = false) String name) {
-        LambdaQueryWrapper<Buyer> wrapper = new LambdaQueryWrapper<>();
-        wrapper.like(name != null && !name.equals(""), Buyer::getName, name);
-        List<Buyer> buyerList = buyerService.list(wrapper);
+    public Msg listAllBuyer() {
+        List<Buyer> buyerList = buyerService.list(new QueryWrapper<>());
         return Msg.success().add("buyerList", buyerList);
     }
 
@@ -59,7 +55,8 @@ public class BuyerController {
     @PostMapping("/addBuyer")
     @ResponseBody
     public Msg addBuyer(Buyer buyer) {
-        VipLevelDic vipLevelDic = vipLevelDicService.getLevelAndBonusByJudgeCount(buyer.getBuyCount());
+        int count = buyer.getBuyCount() == null ? 0 : buyer.getBuyCount();
+        VipLevelDic vipLevelDic = vipLevelDicService.getLevelAndBonusByJudgeCount(count);
         buyer.setVipLevel(vipLevelDic.getVipLevel());
         buyer.setTempCount(buyer.getBuyCount());
         buyer.setTempLevel(buyer.getVipLevel());

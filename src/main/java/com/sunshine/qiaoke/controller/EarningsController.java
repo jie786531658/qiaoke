@@ -3,6 +3,7 @@ package com.sunshine.qiaoke.controller;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.sunshine.qiaoke.Dao.Buyer;
 import com.sunshine.qiaoke.Dao.Earnings;
 import com.sunshine.qiaoke.Dao.PurchaseRecord;
 import com.sunshine.qiaoke.common.Msg;
@@ -10,17 +11,14 @@ import com.sunshine.qiaoke.service.BuyerService;
 import com.sunshine.qiaoke.service.EarningsService;
 import com.sunshine.qiaoke.service.PurchaseRecordService;
 import com.sunshine.qiaoke.vo.BuyerVo;
-import com.sunshine.qiaoke.vo.CalEarnings2Pojo;
 import com.sunshine.qiaoke.vo.CalEarningsPojo;
 import com.sunshine.qiaoke.vo.EarningsQuery;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.thymeleaf.util.StringUtils;
 
-import javax.script.ScriptException;
+import javax.annotation.Resource;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -31,37 +29,19 @@ import java.util.List;
 @RequestMapping("/earnings")
 public class EarningsController {
 
-    @Autowired
+    @Resource
     private BuyerService buyerService;
 
-    @Autowired
+    @Resource
     private PurchaseRecordService recordService;
 
-    @Autowired
+    @Resource
     private EarningsService earningsService;
 
-/*    @RequestMapping("/earningsList1")
-    public String getEarningsList1(@RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum,
-                                   @RequestParam(value = "pageSize", defaultValue = "20") Integer pageSize,
-                                   Model model) {
-        PageHelper.startPage(pageNum, pageSize);
-        List<Earnings> earningsList = earningsService.listEarnings(new EarningsQuery());
-        PageInfo<Earnings> pageInfo = new PageInfo<>(earningsList);
-        model.addAttribute("earningsList", earningsList);
-        model.addAttribute("pageInfo", pageInfo);
-        return "earnings";
-    }*/
-
     @RequestMapping("/earningsList")
-    public String getEarningsList(@RequestParam(value = "name", required = false) String name,
-                                  @RequestParam(value = "calFlag", required = true, defaultValue = "1") int calFlag,
-                                  @RequestParam(value = "startTime", required = true, defaultValue = "2024-01-01 00:00") String startTime,
-                                  @RequestParam(value = "endTime", required = true, defaultValue = "2099-01-01 00:00") String endTime,
-                                  @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum,
-                                  @RequestParam(value = "pageSize", defaultValue = "20") Integer pageSize,
-                                  Model model) throws ParseException {
+    public String getEarningsList(@RequestParam(value = "name", required = false) String name, @RequestParam(value = "calFlag", defaultValue = "1") int calFlag, @RequestParam(value = "startTime", defaultValue = "2024-01-01 00:00") String startTime, @RequestParam(value = "endTime", defaultValue = "2099-01-01 00:00") String endTime, @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum, @RequestParam(value = "pageSize", defaultValue = "20") Integer pageSize, Model model) throws ParseException {
         EarningsQuery query = new EarningsQuery();
-        if (name != null || !StringUtils.isEmpty(name)) {
+        if (name != null) {
             query.setName(name);
         }
         if (calFlag == -1) {
@@ -85,24 +65,28 @@ public class EarningsController {
 
     @PostMapping("/getCalStr/{id}")
     @ResponseBody
-    public Msg getCalStr(@PathVariable("id") String id) throws ScriptException {
+    public Msg getCalStr(@PathVariable("id") String id) {
         CalEarningsPojo earningsPojo = earningsService.getCalStr(new Long(id));
         return Msg.success().add("earningsPojo", earningsPojo);
     }
 
     @PostMapping("/calculate")
     @ResponseBody
-    public Msg calculate(@RequestBody CalEarnings2Pojo earnings2Pojo) {
-//        boolean flag = earningsService.calculate(earningsPojo);
-        boolean flag = earningsService.calculate2(earnings2Pojo);
+    public Msg calculate(@RequestBody CalEarningsPojo earningsPojo) {
+        boolean flag = earningsService.calculate(earningsPojo);
         return flag ? Msg.success() : Msg.fail();
     }
 
     @RequestMapping("/getSubUser/{id}")
     @ResponseBody
     public Msg getSubUser(@PathVariable("id") String id) {
-        LinkedList<Object> list = new LinkedList<>();
-        BuyerVo buyerVo = buyerService.getSubBuyer(new Long(id));
+        LinkedList<BuyerVo> list = new LinkedList<>();
+        Long idL = new Long(id);
+        Buyer buyer = buyerService.getById(idL);
+        BuyerVo buyerVo = new BuyerVo();
+        buyerVo.setId(buyer.getId());
+        buyerVo.setText(buyer.getName());
+        buyerVo.setNodes(buyerService.getTree(idL));
         list.add(buyerVo);
         return Msg.success().add("list", list);
     }
@@ -112,24 +96,10 @@ public class EarningsController {
     @Transactional
     public Msg jiezhuan() {
         LambdaUpdateWrapper<PurchaseRecord> wrapper = new LambdaUpdateWrapper<>();
-        wrapper.set(PurchaseRecord::getCalculateFlag, 1)
-                .eq(PurchaseRecord::getCalculateFlag, 0);
+        wrapper.set(PurchaseRecord::getCalculateFlag, 1).eq(PurchaseRecord::getCalculateFlag, 0);
         boolean flag = recordService.update(wrapper);
-
-//        LambdaUpdateWrapper<Buyer> buyerWrapper = new LambdaUpdateWrapper<>();
-////        buyerWrapper.set(Buyer::getBuyCount, Buyer::getTempCount);
-//        buyerWrapper.set(Buyer::getBuyCount, Buyer::getTempCount)
-//                    .set(Buyer::getVipLevel, "tempLevel");
-//        buyerService.update(buyerWrapper);
         boolean result = buyerService.jiezhuan();
         return flag && result ? Msg.success() : Msg.fail();
-    }
-
-    @RequestMapping("/getCal/{id}")
-    @ResponseBody
-    public Msg getCal(@PathVariable("id") String id) throws ScriptException {
-        CalEarnings2Pojo earnings2Pojo = earningsService.cal(new Long(id));
-        return Msg.success().add("earnings2Pojo", earnings2Pojo);
     }
 
 }

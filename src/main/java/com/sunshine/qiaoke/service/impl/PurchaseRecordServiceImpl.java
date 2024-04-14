@@ -6,16 +6,16 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.sunshine.qiaoke.Dao.PurchaseRecord;
 import com.sunshine.qiaoke.mapper.PurchaseRecordMapper;
 import com.sunshine.qiaoke.service.PurchaseRecordService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.Date;
 import java.util.List;
 
 @Service
 public class PurchaseRecordServiceImpl extends ServiceImpl<PurchaseRecordMapper, PurchaseRecord> implements PurchaseRecordService {
 
-    @Autowired
+    @Resource
     private PurchaseRecordMapper purchaseRecordMapper;
 
     @Override

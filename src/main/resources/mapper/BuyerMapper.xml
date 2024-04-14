@@ -2,9 +2,14 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.sunshine.qiaoke.mapper.BuyerMapper">
 
-    <resultMap id="buyerTree" type="com.sunshine.qiaoke.Dao.Buyer">
+    <resultMap id="childrenBuyer" type="com.sunshine.qiaoke.Dao.Buyer">
         <id property="id" column="id"/>
         <association property="child" column="{id=id}" select="getChildren"/>
+    </resultMap>
+
+    <resultMap id="buyerTree" type="com.sunshine.qiaoke.vo.BuyerVo">
+        <id property="id" column="id"/>
+        <association property="nodes" column="{id=id}" select="getTree"/>
     </resultMap>
 
     <select id="listBuyer" resultType="com.sunshine.qiaoke.Dao.Buyer">
@@ -17,14 +22,21 @@
         </if>
     </select>
 
-    <select id="getChildren" resultMap="buyerTree">
-        select * from buyer
-        where introducer_id = #{id} and delete_flag=0
+    <select id="getChildren" resultMap="childrenBuyer">
+        select id, introducer_id, cal_order from buyer
+        where introducer_id = #{id} and delete_flag = 0
+        order by buyer.cal_order
+    </select>
+
+    <select id="getTree" resultMap="buyerTree">
+        select id, introducer_id, name as text, cal_order from buyer
+        where introducer_id = #{id} and delete_flag = 0
+        order by buyer.cal_order
     </select>
 
     <select id="getAllBuyer" resultType="com.sunshine.qiaoke.Dao.Buyer">
         select * from buyer
-        where delete_flag=0
+        where delete_flag = 0
     </select>
 
     <update id="jiezhuan">
